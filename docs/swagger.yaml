@@ -1,0 +1,380 @@
+openapi: 3.0.0
+info:
+  title: ToDoApp
+  version: 0.0.1
+servers:
+  - url: https://host.name/api
+paths:
+  "/notes":
+    get:
+      operationId: note.index
+      tags:
+        - Note
+      parameters:
+        - name: order_by
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            enum:
+              - created_at
+              - title
+        - name: order_direction
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            enum:
+              - asc
+              - desc
+        - name: per_page
+          in: query
+          schema:
+            type:
+              - integer
+              - 'null'
+            minimum: 1
+      responses:
+        '200':
+          description: Array of `NoteResource`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/NoteResource"
+                required:
+                  - data
+        '403':
+          "$ref": "#/components/responses/AuthorizationException"
+        '422':
+          "$ref": "#/components/responses/ValidationException"
+    post:
+      operationId: note.store
+      tags:
+        - Note
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+              required:
+                - title
+                - content
+      responses:
+        '200':
+          description: "`NoteResource`"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/NoteResource"
+                required:
+                  - data
+        '403':
+          "$ref": "#/components/responses/AuthorizationException"
+        '422':
+          "$ref": "#/components/responses/ValidationException"
+  "/notes/all":
+    get:
+      operationId: note.list
+      tags:
+        - Note
+      parameters:
+        - name: order_by
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            enum:
+              - created_at
+              - title
+        - name: order_direction
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            enum:
+              - asc
+              - desc
+        - name: per_page
+          in: query
+          schema:
+            type:
+              - integer
+              - 'null'
+            minimum: 1
+      responses:
+        '200':
+          description: Array of `NoteResource`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/NoteResource"
+                required:
+                  - data
+        '403':
+          "$ref": "#/components/responses/AuthorizationException"
+        '422':
+          "$ref": "#/components/responses/ValidationException"
+  "/notes/{note}":
+    put:
+      operationId: note.update
+      tags:
+        - Note
+      parameters:
+        - name: note
+          in: path
+          required: true
+          description: The note ID
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+              required:
+                - title
+                - content
+      responses:
+        '200':
+          description: "`NoteResource`"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/NoteResource"
+                required:
+                  - data
+        '403':
+          "$ref": "#/components/responses/AuthorizationException"
+        '404':
+          "$ref": "#/components/responses/ModelNotFoundException"
+        '422':
+          "$ref": "#/components/responses/ValidationException"
+    get:
+      operationId: note.show
+      tags:
+        - Note
+      parameters:
+        - name: note
+          in: path
+          required: true
+          description: The note ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "`NoteResource`"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/NoteResource"
+                required:
+                  - data
+        '404':
+          "$ref": "#/components/responses/ModelNotFoundException"
+    delete:
+      operationId: note.delete
+      tags:
+        - Note
+      parameters:
+        - name: note
+          in: path
+          required: true
+          description: The note ID
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+        '403':
+          "$ref": "#/components/responses/AuthorizationException"
+        '404':
+          "$ref": "#/components/responses/ModelNotFoundException"
+        '422':
+          "$ref": "#/components/responses/ValidationException"
+  "/login":
+    post:
+      operationId: user.login
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                email:
+                  type: string
+              required:
+                - password
+                - email
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+        '403':
+          "$ref": "#/components/responses/AuthorizationException"
+        '422':
+          "$ref": "#/components/responses/ValidationException"
+  "/profile":
+    get:
+      operationId: user.profile
+      tags:
+        - User
+      responses:
+        '200':
+          description: "`UserResource`"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/UserResource"
+                required:
+                  - data
+  "/logout":
+    get:
+      operationId: user.logout
+      tags:
+        - User
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  schemas:
+    NoteResource:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        created_date:
+          type: string
+        updated_date:
+          type: string
+        author_id:
+          type: integer
+      required:
+        - title
+        - content
+        - created_date
+        - updated_date
+        - author_id
+      title: NoteResource
+    UserResource:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        register_date:
+          type: string
+        notes_count:
+          type: string
+      required:
+        - name
+        - email
+        - role
+        - register_date
+        - notes_count
+      title: UserResource
+  responses:
+    ValidationException:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Errors overview.
+              errors:
+                type: object
+                description: A detailed description of each field that failed validation.
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+            required:
+              - message
+              - errors
+    AuthorizationException:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error overview.
+            required:
+              - message
+    ModelNotFoundException:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error overview.
+            required:
+              - message
