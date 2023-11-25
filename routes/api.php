@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
 
 Route::group(['middleware' => ['auth:api']], function (){
@@ -24,11 +23,13 @@ Route::group(['middleware' => ['auth:api']], function (){
 
     Route::group(['prefix' => 'notes'], function (){
         Route::get('/', [NoteController::class, 'index']);
-        Route::post('/', [NoteController::class, 'create']);
+        Route::post('/', [NoteController::class, 'store']);
         Route::get('/all', [NoteController::class, 'list']);
 
-        Route::group(['prefix' => '{note}'], function (){
-            Route::get('/', [NoteController::class, 'show'])->where('note', '[0-9]+');
+        Route::group(['prefix' => '{note}', 'where' => ['note' => '[0-9]+']], function () {
+            Route::put('/', [NoteController::class, 'update']);
+            Route::get('/', [NoteController::class, 'show']);
+            Route::delete('/', [NoteController::class, 'delete']);
         });
     });
 });
