@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property Collection $users
  */
-
 class Role extends Model
 {
     use HasFactory;

@@ -17,8 +17,8 @@ class NoteResource extends JsonResource
         return [
             'title' => $this->title,
             'content' => $this->content,
-            'created_at' => $this->created_at->format('d.m.Y'),
-            'updated_at' => $this->updated_at->format('d.m.Y'),
+            'created_date' => $this->created_at->format('d.m.Y'),
+            'updated_date' => $this->updated_at->format('d.m.Y'),
             'author_id' => $this->user_id,
         ];
     }
