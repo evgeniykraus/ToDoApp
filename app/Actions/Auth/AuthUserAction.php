@@ -3,24 +3,33 @@
 namespace App\Actions\Auth;
 
 use App\DTO\Auth\AuthData;
-use App\DTO\Auth\Credentials;
+use App\Models\User;
+use App\Services\Abstracts\UserServiceInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
-use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 
 class AuthUserAction
 {
+    public function __construct(
+        protected UserServiceInterface $userService,
+    ) {
+    }
+
     /**
-     * @throws UnknownProperties
+     * @param  array  $data
+     * @return AuthData
      */
-    public function __invoke(Credentials $data): AuthData
+    public function __invoke(array $data): AuthData
     {
-        throw_unless(Auth::attempt($data->toArray()),
+        throw_unless(Auth::attempt($data),
             AuthorizationException::class, __('exceptions.bad_login_or_pas'), false);
 
-        $token = Auth::user()->createToken(config('app.key'))->accessToken;
+        /** @var User $user */
+        $user = Auth::user();
 
-        return new AuthData(user: Auth::user(), token: $token);
+        $token = $this->userService->getAccessToken($user);
+
+        return AuthData::from(['user' => $user, 'token' => $token]);
     }
 }
