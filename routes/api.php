@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\NoteController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+//Route::post('register', [UserController::class, 'register']);
+Route::post('login', [UserController::class, 'login']);
+
+Route::group(['middleware' => ['auth:api']], function (){
+    Route::get('profile', [UserController::class, 'profile']);
+    Route::get('logout', [UserController::class, 'logout']);
+
+    Route::group(['prefix' => 'notes'], function (){
+        Route::get('/', [NoteController::class, 'index']);
+        Route::post('/', [NoteController::class, 'create']);
+        Route::get('/all', [NoteController::class, 'list']);
+
+        Route::group(['prefix' => '{note}'], function (){
+            Route::get('/', [NoteController::class, 'show'])->where('note', '[0-9]+');
+        });
+    });
 });

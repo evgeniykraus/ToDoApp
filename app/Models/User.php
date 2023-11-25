@@ -2,11 +2,28 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Laravel\Passport\HasApiTokens;
+
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $remember_token
+ * @property int $role_id
+ * @property Role $role
+ * @property Collection $notes
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 
 class User extends Authenticatable
 {
@@ -21,6 +38,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
     ];
 
     /**
@@ -42,4 +60,24 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * @return HasOne
+     */
+    public function role(): hasOne
+    {
+        return $this->hasOne(Role::class, 'id', 'role_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function notes(): hasMany
+    {
+        return $this->hasMany(Note::class);
+    }
+    public function isAdmin(): bool
+    {
+        return $this->role->id == RoleEnum::admin->value;
+    }
 }

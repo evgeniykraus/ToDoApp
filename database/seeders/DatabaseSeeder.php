@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Domain\Enums\RoleEnum;
+use App\Models\Note;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +15,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $users = [
+            [
+                'name' => 'Админ',
+                'email' => 'admin@gmail.com',
+                'password' => Hash::make('password'),
+                'role_id' => RoleEnum::admin->value
+            ],
+            [
+                'name' => 'Юзер',
+                'email' => 'user@gmail.com',
+                'password' => Hash::make('password'),
+                'role_id' => RoleEnum::user->value
+            ],
+        ];
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $this->call(RoleSeeder::class);
+
+        User::factory()->afterCreating( function ($user) {
+            Note::factory()
+                ->count(rand(10, 20))
+                ->create([
+                    'user_id' => $user->id,
+                ]);
+        })->createMany($users);
     }
 }
