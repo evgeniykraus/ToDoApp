@@ -3,10 +3,13 @@
 namespace App\DTO\Auth;
 
 use App\Models\User;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-class AuthData extends DataTransferObject
+class AuthData extends Data
 {
-    public User $user;
-    public string $token;
+    public function __construct(
+        public readonly User $user,
+        public readonly string $token,
+    ) {
+    }
 }
