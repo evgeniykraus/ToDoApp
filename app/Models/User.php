@@ -24,7 +24,6 @@ use Laravel\Passport\HasApiTokens;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -76,8 +75,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Note::class);
     }
+
+    /**
+     * @return bool
+     */
     public function isAdmin(): bool
     {
         return $this->role->id == RoleEnum::admin->value;
+    }
+
+    /**
+     * @return string
+     */
+    public function routeNotificationForMail(): string
+    {
+        return $this->email;
     }
 }
